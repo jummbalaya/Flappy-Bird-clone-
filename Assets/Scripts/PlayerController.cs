@@ -12,7 +12,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float pushForce = 5f;
     [SerializeField] GameObject gameOverScreen;
     [SerializeField] TextMeshProUGUI scoreText;
-    
+    [SerializeField] TextMeshProUGUI highScoreText;
+
     [SerializeField] AudioSource audio;
     [SerializeField] AudioClip wingSound;
     [SerializeField] AudioClip dieSound;
@@ -21,14 +22,14 @@ public class PlayerController : MonoBehaviour
 
     Rigidbody2D rb;
     int score;
-    
+    int highScore;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         Time.timeScale = 1;
         scoreText.text = score.ToString();
-
+        highScoreText.text = "Best score: " + PlayerPrefs.GetInt("HighScore").ToString();
     }
 
     void Update()
@@ -82,5 +83,9 @@ public class PlayerController : MonoBehaviour
         gameOverScreen.SetActive(true);
         audio.clip = dieSound;
         audio.Play();
+        if (score > PlayerPrefs.GetInt("HighScore", 0))
+        {
+            PlayerPrefs.SetInt("HighScore", score);
+        }
     }
 }
