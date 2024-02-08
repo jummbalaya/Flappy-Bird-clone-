@@ -42,3 +42,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 4226593221
+    locked: 0
+  - name: Pipes
+    uniqueID: 365281275
+    locked: 0
+  - name: Player
+    uniqueID: 4289050827
+    locked: 0

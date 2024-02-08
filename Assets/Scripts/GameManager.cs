@@ -1,16 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class PipeSpawner : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
-    public GameObject pipePrefab;
-    public float spawnRate = 2f; // Rate at which pipes spawn
-    public float spawnHeight = 2f; // Height at which pipes spawn
+    [SerializeField] GameObject pipePrefab;
+    // Rate at which pipes spawn
+    [SerializeField] float spawnRate = 0.5f;
+    // Height at which pipes spawn
+    [SerializeField] float spawnHeight = 3f;
 
-    private float nextSpawnTime = 0f;
+    float nextSpawnTime = 0f;
 
-    private void Update()
+    void Update()
     {
         // Check if it's time to spawn a new pipe
         if (Time.time >= nextSpawnTime)
@@ -21,11 +24,16 @@ public class PipeSpawner : MonoBehaviour
         }
     }
 
-    private void SpawnPipe()
+    void SpawnPipe()
     {
         // Randomly determine the height of the gap between pipes
         float randomHeight = Random.Range(-spawnHeight, spawnHeight);
         // Instantiate a new pipe at the spawner's position with the random height
         Instantiate(pipePrefab, transform.position + new Vector3(0, randomHeight, 0), Quaternion.identity);
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(0);
     }
 }

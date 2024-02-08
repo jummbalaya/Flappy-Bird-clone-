@@ -1,36 +1,86 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] float pushForce = 5f; // Adjust this to control the jump height
-    private Rigidbody2D rb;
+    // Adjust this to control the jump height
+    [SerializeField] float pushForce = 5f;
+    [SerializeField] GameObject gameOverScreen;
+    [SerializeField] TextMeshProUGUI scoreText;
+    
+    [SerializeField] AudioSource audio;
+    [SerializeField] AudioClip wingSound;
+    [SerializeField] AudioClip dieSound;
+    [SerializeField] AudioClip pointSound;
 
-    private void Start()
+
+    Rigidbody2D rb;
+    int score;
+    
+
+    void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        Time.timeScale = 1;
+        scoreText.text = score.ToString();
+
     }
 
-    private void Update()
+    void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
             Jump();
         }
-    }
 
-    private void Jump()
-    {
-        // Add vertical force to the player's Rigidbody
-        rb.velocity = new Vector2(rb.velocity.x, pushForce);
-    }
-
-    void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Pipe"))
+        if (transform.position.y < Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0)).y)
         {
-            Debug.Log("Game Over");
+            GameOver();
         }
+    }
+
+    void Jump()
+    {
+        audio.clip = wingSound;
+        rb.velocity = new Vector2(rb.velocity.x, pushForce);
+        audio.Play();
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag != "ScorePoint")
+        {
+            GameOver();
+        }
+            
+    }
+
+    public void IncrementScore()
+    {
+        score++;
+        scoreText.text = score.ToString();
+        audio.clip = pointSound;
+        audio.Play();
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "ScorePoint")
+        {
+            IncrementScore();
+        }
+    }
+
+    void GameOver()
+    {
+        Time.timeScale = 0;
+        gameOverScreen.SetActive(true);
+        audio.clip = dieSound;
+        audio.Play();
     }
 }
