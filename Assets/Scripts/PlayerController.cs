@@ -18,11 +18,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] AudioClip wingSound;
     [SerializeField] AudioClip dieSound;
     [SerializeField] AudioClip pointSound;
+    [SerializeField] float rotationSpeed = 5f;
+
 
 
     Rigidbody2D rb;
     int score;
     int highScore;
+    bool isBuffedUp;
 
     void Start()
     {
@@ -43,6 +46,12 @@ public class PlayerController : MonoBehaviour
         {
             GameOver();
         }
+        //sprite.localRotation = Quaternion.Euler(0, 0, rb.velocity.y);
+    }
+
+    void FixedUpdate()
+    {
+        RotatePlayer();
     }
 
     void Jump()
@@ -54,19 +63,32 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag != "ScorePoint")
+        if (collision.gameObject.tag == "Pipe")
         {
             GameOver();
         }
-            
+        if (collision.gameObject.tag == "BuffUp")
+        {
+            isBuffedUp = true;
+            Destroy(collision.gameObject);
+        }
     }
 
     public void IncrementScore()
     {
-        score++;
+        if (isBuffedUp)
+        {
+            score += 5;
+        }
+        else
+        {
+            score++;
+        }
         scoreText.text = score.ToString();
         audio.clip = pointSound;
         audio.Play();
+
+        isBuffedUp = false;
     }
 
     void OnCollisionExit2D(Collision2D collision)
@@ -88,4 +110,22 @@ public class PlayerController : MonoBehaviour
             PlayerPrefs.SetInt("HighScore", score);
         }
     }
+
+    void RotatePlayer()
+    {
+        // Check if the player is jumping or falling
+        if (rb.velocity.y > 0) // If player is jumping
+        {
+            transform.rotation = Quaternion.Euler(0, 0, rotationSpeed);
+        }
+        else if (rb.velocity.y < 0) // If player is falling
+        {
+            transform.rotation = Quaternion.Euler(0, 0, -rotationSpeed);
+        }
+        else // If player is not jumping or falling, reset rotation
+        {
+            transform.rotation = Quaternion.identity;
+        }
+    }
+
 }
