@@ -1,2 +1,2 @@
 # mobileGameDev
- Unity mobile Semos 
+ flappy bird clone, nothin special 
